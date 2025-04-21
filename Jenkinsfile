@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     stages {
-
         /*
 
         stage('Build') {
@@ -25,30 +24,28 @@ pipeline {
         }
         */
 
-        stage('Tests'){
+        stage('Tests') {
             parallel {
-                stage('Unit tests'){
-
-                     agent {
+                stage('Unit tests') {
+                    agent {
                         docker {
                             image 'node:18-alpine'
                             reuseNode true
-                                }
-                            }
-
-                        steps {
-                            sh '''
-                                #test -f build/index.html
-                                npm test
-                            '''
-                         }
-
-                        post {
-                            always{
-                                junit 'jest-results/junit.xml'
-                            }
                         }
                     }
+
+                    steps {
+                        sh '''
+                            #test -f build/index.html
+                            npm test
+                        '''
+                    }
+                    post {
+                        always {
+                            junit 'jest-results/junit.xml'
+                        }
+                    }
+                }
 
                 stage('E2E') {
                     agent {
@@ -58,7 +55,7 @@ pipeline {
                         }
                     }
 
-                steps {
+                    steps {
                         sh '''
                             npm install serve
                             node_modules/.bin/serve -s build &
@@ -77,8 +74,3 @@ pipeline {
         }
     }
 }
-
-
-
-
-
